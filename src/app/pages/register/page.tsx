@@ -1,41 +1,32 @@
 "use client";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import useLoginStore from "@/app/store/useLoginStore";
-import Link from "next/link";
-export default function Login() {
+import { useRouter } from "next/navigation";
+export default function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const setAuth = useLoginStore((state: any) => state.setAuth);
   const router = useRouter();
-  const isUserRegister = useLoginStore((state: any) => state.isUserRegister);
-  const setCurrentUser = useLoginStore((state: any) => state.setCurrentUser);
-  const handleLoginSubmit = async function handleLoginSubmit(
+  const handleRegisterSubmit = async function handleRegisterSubmit(
     e: React.FormEvent
   ) {
     e.preventDefault();
-    if (isUserRegister(email, password)) {
-      setCurrentUser(email);
-      localStorage.setItem("eamil", email);
-      alert("登录成功");
-      router.push("home");
+    if (password !== confirmPassword) {
+      alert("两次的密码不一致！！！");
     } else {
-      alert("该邮箱未注册");
+      setAuth({ email, password });
+      alert("注册成功");
+      router.push("login");
     }
-    // await loginApi({ email, password }).then((res) => {
-    //   if (res.ok) {
-    //     console.log("ok");
-    //   } else {
-    //     alert("登录失败");
-    //   }
-    // });
   };
   return (
     <div className="flex justify-center items-center h-screen bg-slate-400 ">
       <form
-        onSubmit={handleLoginSubmit}
+        onSubmit={handleRegisterSubmit}
         className="flex flex-col bg-slate-300 rounded-2xl px-8 py-4 space-y-4 "
       >
-        <h2 className="mx-auto">登录</h2>
+        <h2 className="mx-auto">注册</h2>
         <input
           type="text"
           placeholder="请输入邮箱"
@@ -52,18 +43,20 @@ export default function Login() {
           required
           className=" h-6 rounded-md bg-white bg-opacity-20 placeholder-gray-300"
         />
+        <input
+          type="password"
+          placeholder="请再次输入密码"
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          name="ComfirmPassword"
+          required
+          className=" h-6 rounded-md bg-white bg-opacity-20 placeholder-gray-300"
+        />
         <button
           type="submit"
           className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-1 px-4 rounded-md transition duration-300 ease-in-out transform hover:scale-105"
         >
-          登录
+          注册
         </button>
-        <p className="text-center text-[10px] text-gray-500">
-          还没有账号？
-          <span className="text-blue-500">
-            <Link href="pages/register">立即注册</Link>
-          </span>
-        </p>
       </form>
     </div>
   );
