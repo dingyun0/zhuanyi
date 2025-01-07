@@ -1,33 +1,29 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import useLoginStore from "@/app/store/useLoginStore";
+import { loginApi } from "@/api/auth";
 import Link from "next/link";
 export default function Login() {
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
-  const isUserRegister = useLoginStore((state: any) => state.isUserRegister);
-  const setCurrentUser = useLoginStore((state: any) => state.setCurrentUser);
   const handleLoginSubmit = async function handleLoginSubmit(
     e: React.FormEvent
   ) {
     e.preventDefault();
-    if (isUserRegister(email, password)) {
-      setCurrentUser(email);
-      localStorage.setItem("eamil", email);
-      alert("登录成功");
-      router.push("home");
-    } else {
-      alert("该邮箱未注册");
-    }
-    // await loginApi({ email, password }).then((res) => {
-    //   if (res.ok) {
-    //     console.log("ok");
-    //   } else {
-    //     alert("登录失败");
-    //   }
-    // });
+    await loginApi(username,password).then((res)=>{
+      if(res.status === 200){
+        alert("登录成功");
+        if (window.location.pathname !== '/') {
+          window.location.replace('/');
+        }
+        router.push("/pages/home");
+      }else{
+        alert("登录失败");
+      }
+    }).catch((err)=>{
+      console.log(err);
+    })
   };
   return (
     <div className="flex justify-center items-center h-screen bg-slate-400 ">
@@ -39,10 +35,10 @@ export default function Login() {
         <input
           type="text"
           placeholder="请输入邮箱"
-          onChange={(e) => setEmail(e.target.value)}
-          name="email"
+          onChange={(e) => setUsername(e.target.value)}
+          name="username"
           required
-          className=" h-6 rounded-md bg-white bg-opacity-20 placeholder-gray-300"
+          className=" h-6 rounded-md bg-white bg-opacity-20 placeholder-black"
         />
         <input
           type="password"
@@ -50,7 +46,7 @@ export default function Login() {
           onChange={(e) => setPassword(e.target.value)}
           name="password"
           required
-          className=" h-6 rounded-md bg-white bg-opacity-20 placeholder-gray-300"
+          className=" h-6 rounded-md bg-white bg-opacity-20 placeholder-black"
         />
         <button
           type="submit"
@@ -64,6 +60,11 @@ export default function Login() {
             <Link href="pages/register">立即注册</Link>
           </span>
         </p>
+        {/* <p className="text-center text-[10px] text-gray-500">
+          <span className="text-blue-500">
+            <Link href="/pages/forgetPassword">忘记密码?</Link>
+          </span>
+        </p> */}
       </form>
     </div>
   );
