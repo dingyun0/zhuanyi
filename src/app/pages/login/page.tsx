@@ -3,9 +3,11 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import useLoginStore from "@/app/store/useLoginStore";
 import Link from "next/link";
+import { loginApi } from "@/api/login";
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
   const router = useRouter();
   const isUserRegister = useLoginStore((state: any) => state.isUserRegister);
   const setCurrentUser = useLoginStore((state: any) => state.setCurrentUser);
@@ -13,21 +15,15 @@ export default function Login() {
     e: React.FormEvent
   ) {
     e.preventDefault();
-    if (isUserRegister(email, password)) {
-      setCurrentUser(email);
-      localStorage.setItem("eamil", email);
-      alert("登录成功");
-      router.push("home");
-    } else {
-      alert("该邮箱未注册");
-    }
-    // await loginApi({ email, password }).then((res) => {
-    //   if (res.ok) {
-    //     console.log("ok");
-    //   } else {
-    //     alert("登录失败");
-    //   }
-    // });
+    // if (isUserRegister(email, password)) {
+    //   setCurrentUser(email);
+    //   localStorage.setItem("eamil", email);
+    //   alert("登录成功");
+    //   router.push("home");
+    // } else {
+    //   alert("该邮箱未注册");
+    // }
+    await loginApi(email, password).then((res) => {});
   };
   return (
     <div className="flex justify-center items-center h-screen bg-slate-400 ">
